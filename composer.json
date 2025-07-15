@@ -1,0 +1,20 @@
+{
+  "name": "roamingwilson/youtube-tools",
+  "description": "Project made for Jaafar Aziz UpWork project, to download and cut YouTube videos.",
+  "type": "library",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Ibrahim Issa",
+      "email": "wilsoncloudltd@gmail.com"
+    }
+  ],
+  "require": {
+    "php": ">=7.4"
+  },
+  "autoload": {
+    "psr-4": {
+      "Andrew\\YouTubeClipper\\": "src/"
+    }
+  }
+}
