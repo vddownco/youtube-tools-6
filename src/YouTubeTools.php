@@ -1,6 +1,6 @@
 <?php
 
-namespace Andrew\YouTubeClipper;
+namespace RoamingWilson\YouTubeTools;
 
 use RuntimeException;
 use InvalidArgumentException;

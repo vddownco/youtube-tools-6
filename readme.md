@@ -34,7 +34,7 @@ composer require roamingwilson/youtube-tools
 ### Usage
 
 ```php
-use Andrew\YouTubeClipper\YouTubeClipper;
+use RoamingWilson\YouTubeTools\YouTubeClipper;
 
 $clipper = new YouTubeClipper(
     '/your/temp/dir',                 // Optional temp directory
