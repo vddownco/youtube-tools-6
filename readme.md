@@ -1,4 +1,4 @@
-# YouTube Clipper PHP Package
+# YouTube Tools PHP Package
 
 [GitHub Repository](https://github.com/roamingwilson/youtube-tools)
 
@@ -34,14 +34,14 @@ composer require roamingwilson/youtube-tools
 ### Usage
 
 ```php
-use RoamingWilson\YouTubeTools\YouTubeClipper;
+use RoamingWilson\YouTubeTools\YouTubeTools;
 
-$clipper = new YouTubeClipper(
+$tools = new YouTubeTools(
     '/your/temp/dir',                 // Optional temp directory
     '/your/cookies.txt'              // Optional cookies.txt file from browser
 );
 
-$result = $clipper->downloadAndCut(
+$result = $tools->downloadAndCut(
     'https://www.youtube.com/watch?v=dQw4w9WgXcQ', 
     [
         ['from' => '00:00:00', 'to' => '00:00:10'],

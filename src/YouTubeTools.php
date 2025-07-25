@@ -5,7 +5,7 @@ namespace RoamingWilson\YouTubeTools;
 use RuntimeException;
 use InvalidArgumentException;
 
-class YouTubeClipper
+class YouTubeTools
 {
     protected string $userAgent;
     protected string $tempDir;
