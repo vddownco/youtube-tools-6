@@ -97,4 +97,57 @@ class YouTubeClipper
             'clips' => $outputClips,
         ];
     }
+
+    public function downloadOnly(string $url, string $outputDir): array
+    {
+        $randomName = 'source_' . mt_rand(100000, 999999);
+        $outputTemplate = "{$this->tempDir}/{$randomName}.%(ext)s";
+
+        $downloadCmd = sprintf(
+            'yt-dlp %s --user-agent=%s -f "bv*+ba/b" -o %s --merge-output-format mp4 %s 2>&1',
+            $this->cookiesFile ? '--cookies ' . escapeshellarg($this->cookiesFile) : '',
+            escapeshellarg($this->userAgent),
+            escapeshellarg($outputTemplate),
+            escapeshellarg($url)
+        );
+
+        exec($downloadCmd, $ytOutput, $ytStatus);
+        if ($ytStatus !== 0) {
+            return [
+                'status' => false,
+                'error' => 'Download failed',
+                'yt-dlp-output' => $ytOutput,
+            ];
+        }
+
+        $videoPath = "{$this->tempDir}/{$randomName}.mp4";
+        if (!file_exists($videoPath)) {
+            return ['status' => false, 'error' => 'Downloaded file not found'];
+        }
+
+        if (!is_dir($outputDir)) {
+            mkdir($outputDir, 0777, true);
+        }
+
+        $outputPath = sprintf('%s/clip_%02d.mp4', $outputDir, 1);
+        $ffmpegCmd = sprintf(
+            'ffmpeg -i %s -c:a copy -y %s 2>&1',
+            escapeshellarg($videoPath),
+            escapeshellarg($outputPath)
+        );
+
+        exec($ffmpegCmd, $ffmpegOutput, $ffmpegStatus);
+
+        if ($ffmpegStatus === 0 && file_exists($outputPath)) {
+            return [
+                'status' => true,
+                'path' => realpath($outputPath),
+            ];
+        }
+
+        return [
+            'status' => false,
+            'error' => 'Failed to download video',
+        ];
+    }
 }
