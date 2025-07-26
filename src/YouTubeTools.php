@@ -150,4 +150,55 @@ class YouTubeTools
             'error' => 'Failed to download video',
         ];
     }
+
+    public function cutOnly($videoPath, $clipsJson, $outputDir)
+    {
+        foreach ($clipsJson as $index => $clip) {
+            $from = $clip['from'] ?? null;
+            $to = $clip['to'] ?? null;
+            if (!$from || !$to) continue;
+
+            $timeArgs = "-ss $from -to $to";
+            $crop = '';
+
+            if (isset($clip['crop_x'], $clip['crop_y'], $clip['crop_width'], $clip['crop_height'])) {
+                $crop = sprintf(
+                    '-vf "crop=%d:%d:%d:%d"',
+                    $clip['crop_width'],
+                    $clip['crop_height'],
+                    $clip['crop_x'],
+                    $clip['crop_y']
+                );
+            }
+
+            $outputPath = sprintf('%s/clip_%02d.mp4', $outputDir, $index + 1);
+            $ffmpegCmd = sprintf(
+                'ffmpeg %s -i %s %s -c:a copy -y %s 2>&1',
+                $timeArgs,
+                escapeshellarg($videoPath),
+                $crop,
+                escapeshellarg($outputPath)
+            );
+
+            exec($ffmpegCmd, $ffmpegOutput, $ffmpegStatus);
+
+            if ($ffmpegStatus === 0 && file_exists($outputPath)) {
+                $outputClips[] = [
+                    'clip_index' => $index + 1,
+                    'path' => realpath($outputPath),
+                ];
+                continue;
+            }
+
+            return [
+                'status' => false,
+                'error' => 'Failed to cut video',
+            ];
+        }
+
+        return [
+            'status' => true,
+            'clips' => $outputClips,
+        ];
+    }
 }
