@@ -91,8 +91,6 @@ class YouTubeTools
                 $outputClips[] = [
                     'clip_index' => $index + 1,
                     'path' => realpath($outputPath),
-                    'reason' => $reason,
-                    'virality_score' => $virality_score,
                 ];
             }
         }
@@ -191,6 +189,8 @@ class YouTubeTools
                 $outputClips[] = [
                     'clip_index' => $index + 1,
                     'path' => realpath($outputPath),
+                    'reason' => $reason,
+                    'virality_score' => $virality_score,
                 ];
                 continue;
             }
