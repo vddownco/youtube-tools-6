@@ -55,8 +55,6 @@ class YouTubeTools
 
         $outputClips = [];
         foreach ($clipsJson as $index => $clip) {
-            $reason = $clip['reason'] ?? null;
-            $virality_score = $clip['virality_score'] ?? null;
             $start = $clip['start'] ?? null;
             $to = $clip['to'] ?? null;
 
@@ -157,6 +155,8 @@ class YouTubeTools
     public function cutOnly($videoPath, $clipsJson, $outputDir)
     {
         foreach ($clipsJson as $index => $clip) {
+            $reason = $clip['reason'] ?? null;
+            $virality_score = $clip['virality_score'] ?? null;
             $start = $clip['start'] ?? null;
             $end = $clip['end'] ?? null;
             if (!$start || !$end) continue;
