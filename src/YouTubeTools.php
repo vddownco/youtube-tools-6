@@ -55,6 +55,8 @@ class YouTubeTools
 
         $outputClips = [];
         foreach ($clipsJson as $index => $clip) {
+            $reason = $clip['reason'] ?? null;
+            $virality_score = $clip['virality_score'] ?? null;
             $start = $clip['start'] ?? null;
             $to = $clip['to'] ?? null;
 
@@ -73,7 +75,8 @@ class YouTubeTools
                 );
             }
 
-            $outputPath = sprintf('%s/clip_%02d.mp4', $outputDir, $index + 1);
+            $randomName = 'clip_' . mt_rand(100000, 999999) . '.mp4';
+            $outputPath = sprintf('%s/%s', $outputDir, $randomName);
             $ffmpegCmd = sprintf(
                 'ffmpeg %s -i %s %s -c:a copy -y %s 2>&1',
                 $timeArgs,
@@ -88,6 +91,8 @@ class YouTubeTools
                 $outputClips[] = [
                     'clip_index' => $index + 1,
                     'path' => realpath($outputPath),
+                    'reason' => $reason,
+                    'virality_score' => $virality_score,
                 ];
             }
         }
