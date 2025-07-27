@@ -55,12 +55,12 @@ class YouTubeTools
 
         $outputClips = [];
         foreach ($clipsJson as $index => $clip) {
-            $from = $clip['from'] ?? null;
+            $start = $clip['start'] ?? null;
             $to = $clip['to'] ?? null;
 
-            if (!$from || !$to) continue;
+            if (!$start || !$to) continue;
 
-            $timeArgs = "-ss $from -to $to";
+            $timeArgs = "-ss $start -to $to";
             $crop = '';
 
             if (isset($clip['crop_x'], $clip['crop_y'], $clip['crop_width'], $clip['crop_height'])) {
@@ -154,11 +154,11 @@ class YouTubeTools
     public function cutOnly($videoPath, $clipsJson, $outputDir)
     {
         foreach ($clipsJson as $index => $clip) {
-            $from = $clip['from'] ?? null;
-            $to = $clip['to'] ?? null;
-            if (!$from || !$to) continue;
+            $start = $clip['start'] ?? null;
+            $end = $clip['end'] ?? null;
+            if (!$start || !$end) continue;
 
-            $timeArgs = "-ss $from -to $to";
+            $timeArgs = "-ss $start -to $end";
             $crop = '';
 
             if (isset($clip['crop_x'], $clip['crop_y'], $clip['crop_width'], $clip['crop_height'])) {
