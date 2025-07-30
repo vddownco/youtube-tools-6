@@ -150,7 +150,6 @@ class YouTubeTools
             ];
         } else {
             print_r($ffmpegOutput);
-            die;
         }
 
         return [
