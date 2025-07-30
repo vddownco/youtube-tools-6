@@ -138,6 +138,7 @@ class YouTubeTools
             $crop = sprintf('-vf "crop=%d:%d:%d:%d"', $clip['crop_width'], $clip['crop_height'], $clip['crop_x'], $clip['crop_y']);
         }
 
+        $outputClips = [];
         $outputPath = sprintf('%s/clip_%02d.mp4', $outputDir, 1);
         $ffmpegCmd = sprintf('ffmpeg %s -i %s %s -c:a copy -y %s 2>&1', $timeArgs, escapeshellarg($videoPath), $crop, escapeshellarg($outputPath));
 
@@ -147,6 +148,9 @@ class YouTubeTools
             $outputClips[] = [
                 'path' => realpath($outputPath),
             ];
+        } else {
+            print_r($ffmpegOutput);
+            die;
         }
 
         return [
