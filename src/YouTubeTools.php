@@ -11,7 +11,7 @@ class YouTubeTools
     protected string $tempDir;
     protected ?string $cookiesFile;
 
-    public function __construct(string $tempDir = null, string $cookiesFile = null)
+    public function __construct(?string $tempDir = null, ?string $cookiesFile = null)
     {
         $this->userAgent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/114 Safari/537.36';
         $this->tempDir = $tempDir ?? sys_get_temp_dir() . '/ytclips';
@@ -138,23 +138,20 @@ class YouTubeTools
             $crop = sprintf('-vf "crop=%d:%d:%d:%d"', $clip['crop_width'], $clip['crop_height'], $clip['crop_x'], $clip['crop_y']);
         }
 
-        $outputClips = [];
-        $outputPath = sprintf('%s/clip_%02d.mp4', $outputDir, 1);
+        $outputPath = sprintf('%s/clip_%s.mp4', $outputDir, uniqid());
         $ffmpegCmd = sprintf('ffmpeg %s -i %s %s -c:a copy -y %s 2>&1', $timeArgs, escapeshellarg($videoPath), $crop, escapeshellarg($outputPath));
 
         exec($ffmpegCmd, $ffmpegOutput, $ffmpegStatus);
 
         if ($ffmpegStatus === 0 && file_exists($outputPath)) {
-            $outputClips[] = [
-                'path' => realpath($outputPath),
-            ];
+            $path= realpath($outputPath);
         } else {
             print_r($ffmpegOutput);
         }
 
         return [
             'status' => true,
-            'clips' => $outputClips,
+            'path' => $path
         ];
     }
 }
