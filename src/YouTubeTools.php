@@ -27,13 +27,7 @@ class YouTubeTools
         $randomName = 'source_' . mt_rand(100000, 999999);
         $outputTemplate = "{$this->tempDir}/{$randomName}.%(ext)s";
 
-        $downloadCmd = sprintf(
-            'yt-dlp %s --user-agent=%s -f "bv*+ba/b" -o %s --merge-output-format mp4 %s 2>&1',
-            $this->cookiesFile ? '--cookies ' . escapeshellarg($this->cookiesFile) : '',
-            escapeshellarg($this->userAgent),
-            escapeshellarg($outputTemplate),
-            escapeshellarg($url)
-        );
+        $downloadCmd = sprintf('yt-dlp %s --user-agent=%s -f "bv*+ba/b" -o %s --merge-output-format mp4 %s 2>&1', $this->cookiesFile ? '--cookies ' . escapeshellarg($this->cookiesFile) : '', escapeshellarg($this->userAgent), escapeshellarg($outputTemplate), escapeshellarg($url));
 
         exec($downloadCmd, $ytOutput, $ytStatus);
         if ($ytStatus !== 0) {
@@ -58,30 +52,20 @@ class YouTubeTools
             $start = $clip['start'] ?? null;
             $to = $clip['to'] ?? null;
 
-            if (!$start || !$to) continue;
+            if (!$start || !$to) {
+                continue;
+            }
 
             $timeArgs = "-ss $start -to $to";
             $crop = '';
 
             if (isset($clip['crop_x'], $clip['crop_y'], $clip['crop_width'], $clip['crop_height'])) {
-                $crop = sprintf(
-                    '-vf "crop=%d:%d:%d:%d"',
-                    $clip['crop_width'],
-                    $clip['crop_height'],
-                    $clip['crop_x'],
-                    $clip['crop_y']
-                );
+                $crop = sprintf('-vf "crop=%d:%d:%d:%d"', $clip['crop_width'], $clip['crop_height'], $clip['crop_x'], $clip['crop_y']);
             }
 
             $randomName = 'clip_' . mt_rand(100000, 999999) . '.mp4';
             $outputPath = sprintf('%s/%s', $outputDir, $randomName);
-            $ffmpegCmd = sprintf(
-                'ffmpeg %s -i %s %s -c:a copy -y %s 2>&1',
-                $timeArgs,
-                escapeshellarg($videoPath),
-                $crop,
-                escapeshellarg($outputPath)
-            );
+            $ffmpegCmd = sprintf('ffmpeg %s -i %s %s -c:a copy -y %s 2>&1', $timeArgs, escapeshellarg($videoPath), $crop, escapeshellarg($outputPath));
 
             exec($ffmpegCmd, $ffmpegOutput, $ffmpegStatus);
 
@@ -104,13 +88,7 @@ class YouTubeTools
         $randomName = 'source_' . mt_rand(100000, 999999);
         $outputTemplate = "{$this->tempDir}/{$randomName}.%(ext)s";
 
-        $downloadCmd = sprintf(
-            'yt-dlp %s --user-agent=%s -f "bv*+ba/b" -o %s --merge-output-format mp4 %s 2>&1',
-            $this->cookiesFile ? '--cookies ' . escapeshellarg($this->cookiesFile) : '',
-            escapeshellarg($this->userAgent),
-            escapeshellarg($outputTemplate),
-            escapeshellarg($url)
-        );
+        $downloadCmd = sprintf('yt-dlp %s --user-agent=%s -f "bv*+ba/b" -o %s --merge-output-format mp4 %s 2>&1', $this->cookiesFile ? '--cookies ' . escapeshellarg($this->cookiesFile) : '', escapeshellarg($this->userAgent), escapeshellarg($outputTemplate), escapeshellarg($url));
 
         exec($downloadCmd, $ytOutput, $ytStatus);
         if ($ytStatus !== 0) {
@@ -131,11 +109,7 @@ class YouTubeTools
         }
 
         $outputPath = sprintf('%s/clip_%02d.mp4', $outputDir, 1);
-        $ffmpegCmd = sprintf(
-            'ffmpeg -i %s -c:a copy -y %s 2>&1',
-            escapeshellarg($videoPath),
-            escapeshellarg($outputPath)
-        );
+        $ffmpegCmd = sprintf('ffmpeg -i %s -c:a copy -y %s 2>&1', escapeshellarg($videoPath), escapeshellarg($outputPath));
 
         exec($ffmpegCmd, $ffmpegOutput, $ffmpegStatus);
 
@@ -152,52 +126,26 @@ class YouTubeTools
         ];
     }
 
-    public function cutOnly($videoPath, $clipsJson, $outputDir)
+    public function cutOnly($videoPath, $clip, $outputDir)
     {
-        foreach ($clipsJson as $index => $clip) {
-            $reason = $clip['reason'] ?? null;
-            $virality_score = $clip['virality_score'] ?? null;
-            $start = $clip['start'] ?? null;
-            $end = $clip['end'] ?? null;
-            if (!$start || !$end) continue;
+        $start = $clip['start'];
+        $end = $clip['end'];
 
-            $timeArgs = "-ss $start -to $end";
-            $crop = '';
+        $timeArgs = "-ss $start -to $end";
+        $crop = '';
 
-            if (isset($clip['crop_x'], $clip['crop_y'], $clip['crop_width'], $clip['crop_height'])) {
-                $crop = sprintf(
-                    '-vf "crop=%d:%d:%d:%d"',
-                    $clip['crop_width'],
-                    $clip['crop_height'],
-                    $clip['crop_x'],
-                    $clip['crop_y']
-                );
-            }
+        if (isset($clip['crop_x'], $clip['crop_y'], $clip['crop_width'], $clip['crop_height'])) {
+            $crop = sprintf('-vf "crop=%d:%d:%d:%d"', $clip['crop_width'], $clip['crop_height'], $clip['crop_x'], $clip['crop_y']);
+        }
 
-            $outputPath = sprintf('%s/clip_%02d.mp4', $outputDir, $index + 1);
-            $ffmpegCmd = sprintf(
-                'ffmpeg %s -i %s %s -c:a copy -y %s 2>&1',
-                $timeArgs,
-                escapeshellarg($videoPath),
-                $crop,
-                escapeshellarg($outputPath)
-            );
+        $outputPath = sprintf('%s/clip_%02d.mp4', $outputDir, 1);
+        $ffmpegCmd = sprintf('ffmpeg %s -i %s %s -c:a copy -y %s 2>&1', $timeArgs, escapeshellarg($videoPath), $crop, escapeshellarg($outputPath));
 
-            exec($ffmpegCmd, $ffmpegOutput, $ffmpegStatus);
+        exec($ffmpegCmd, $ffmpegOutput, $ffmpegStatus);
 
-            if ($ffmpegStatus === 0 && file_exists($outputPath)) {
-                $outputClips[] = [
-                    'clip_index' => $index + 1,
-                    'path' => realpath($outputPath),
-                    'reason' => $reason,
-                    'virality_score' => $virality_score,
-                ];
-                continue;
-            }
-
-            return [
-                'status' => false,
-                'error' => 'Failed to cut video',
+        if ($ffmpegStatus === 0 && file_exists($outputPath)) {
+            $outputClips[] = [
+                'path' => realpath($outputPath),
             ];
         }
 
